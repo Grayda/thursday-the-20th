@@ -44,14 +44,36 @@
     
     dayjs.extend(window.dayjs_plugin_advancedFormat)
 
+    function getDates() {
+        return {
+            "day": dayjs().format('dddd'),
+            "date": "the " + dayjs().format('Do')
+        }
+    }
+    
+    function arraySame(A, B) {
+        return JSON.stringify(A) == JSON.stringify(B)
+    }
+
+    function setDates(dates) {
+        document.getElementById("day").innerHTML = dates["day"]
+        document.getElementById("date").innerHTML = dates["date"]
+    }
+    
     function setup() {
-        document.getElementById("day").innerHTML = dayjs().format('dddd')
-        document.getElementById("date").innerHTML = "the " + dayjs().format('Do')
+        
+        var oldDates = getDates()
+        
+        setDates(oldDates)
         
         setInterval(function() {
-            document.getElementById("day").innerHTML = dayjs().format('dddd')
-            document.getElementById("date").innerHTML = "the " + dayjs().format('Do')
-        }, 100)
+            newDates = getDates()
+            
+            if(!arraySame(newDates, oldDates)) {
+                setDates(newDates)
+                oldDates = newDates
+            }
+        }, 1000)
     }
 
 </script>

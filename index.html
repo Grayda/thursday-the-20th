@@ -6,12 +6,28 @@
 
     <title>Thursday the 20th</title>
     <style>
-        #date_container {
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+
+        #time_container, #date_container {
+            position: relative;
+        }
+
+        #date_wrapper {
             position: absolute;
             text-align: center;
-            top: 415px;
+            top: 410px;
             line-height: 70px;
-            left: 270px;
+            left: 256px;
             font-size: 70px;
             color: rgb(215, 187, 88);
             font-family: Arial;
@@ -23,19 +39,70 @@
             -webkit-text-fill-color: rgb(215, 187, 88);
         }
 
-        @font-face {
-            font-family: tragicmarker;
-            src: url(tragicmarker.ttf);
+        #time_wrapper {
+            position: absolute;
+            top: 330px;
+            left: 350px;
+            height: 200px;
+            width: 200px;
+        }
+
+        #time_wrapper #second {
+            width: 85px;
+            height: 2px;
+            top: 95px;
+            left: 13px;
+            position: relative;
+            background: black;
+        }
+
+        #time_wrapper #minute {
+            width: 75px;
+            height: 3px;
+            top: 97px;
+            left: 22px;
+            position: relative;
+            background: black;
+        }
+
+        #time_wrapper #hour {
+            width: 65px;
+            height: 3px;
+            top: 100px;
+            left: 32px;
+            position: relative;
+            background: black;
+        }
+
+        .hand {
+            transform-origin: 100%;
+            transform: rotate(94deg);
+            transition-timing-function: cubic-bezier(0.1, 2.7, 0.58, 1);
         }
     </style>
 </head>
 
 <body>
-    <img src="thursday.jpg" />
-    <div id="date_container">
-        <div id="day"></div>
-        <div id="date"></div>
+    <div id="grid">
+        <div id="time_container">
+            <img src="930.jpg" />
+            <div id="time_wrapper">
+                <div class="hand" id="hour"></div>
+                <div class="hand" id="minute"></div>
+                <div class="hand" id="second"></div>
+            </div>
+        </div>
+        <div id="date_container">
+            <img src="thursday.jpg" />
+            <div id="date_wrapper">
+                <div id="day"></div>
+                <div id="date"></div>
+            </div>
+        </div>
     </div>
+    
+    
+    
 </body>
 
 <script type="text/javascript">
@@ -50,6 +117,29 @@
             "date": "the " + dayjs().format('Do')
         }
     }
+
+    function secondToDegrees(time) {
+        const secondsDegrees = ((time["second"] / 60) * 360) + 90;
+        return `rotate(${secondsDegrees}deg)`
+    }
+
+    function minuteToDegrees(time) {
+        const minsDegrees = ((time["minute"] / 60) * 360) + (( time["second"] /60)*6) + 90;
+        return `rotate(${minsDegrees}deg)`
+    }
+
+    function hourToDegrees(time) {
+        const hourDegrees = ((time["hour"] / 12) * 360) + ((time["minute"]/60)*30) + 90;
+        return `rotate(${hourDegrees}deg)`
+    }
+
+    function getTimes() {
+        return {
+            "hour": dayjs().format("h"),
+            "minute": dayjs().format("m"),
+            "second": dayjs().format("s")
+        }
+    }
     
     function arraySame(A, B) {
         return JSON.stringify(A) == JSON.stringify(B)
@@ -59,12 +149,19 @@
         document.getElementById("day").innerHTML = dates["day"]
         document.getElementById("date").innerHTML = dates["date"]
     }
-    
+
+    function setTimes(time) {
+        document.querySelector('#second').style.transform = secondToDegrees(time)
+        document.getElementById("minute").style.transform = minuteToDegrees(time)
+        document.getElementById("hour").style.transform = hourToDegrees(time)
+    }
+
     function setup() {
         
         var oldDates = getDates()
         
         setDates(oldDates)
+        setTimes(getTimes())
         
         setInterval(function() {
             newDates = getDates()
@@ -73,6 +170,9 @@
                 setDates(newDates)
                 oldDates = newDates
             }
+
+            setTimes(getTimes())
+
         }, 1000)
     }
 
